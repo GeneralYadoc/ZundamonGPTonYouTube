@@ -1,0 +1,30 @@
+# チャット欄ウインドウの設定
+monitor_window_visible: 'True'    # 'True' or 'False'
+display_user_name_on_monitor_window: 'False'    # 'True' or 'False'
+monitor_window_title: 'ぐみんのしつもん'
+monitor_window_size: '350x754'
+monitor_window_color: '#ffffff'
+monitor_font_color: '#000000'
+monitor_font_size: '10'
+monitor_font_type: 'Courier'
+
+# 質問ウインドウの設定
+display_user_name_on_ask_window: 'False'    # 'True' or 'False'
+ask_window_title: 'ぐみんのしつもん'
+ask_window_size: '500x250'
+ask_window_color: '#354c87'
+ask_font_color: '#ffe4fb'
+ask_font_size: '12'
+ask_font_type: 'Courier'
+
+# 回答ウインドウの設定
+answer_window_title: 'てんさいずんだもんのこたえ'
+answer_window_size: '500x450'
+answer_window_color: '#ffe4e0'
+answer_font_color: '#004cF7'
+answer_font_size: '13'
+answer_font_type: 'Helvetica'
+volume: 100    # 0 - 100
+model: 'gpt-3.5-turbo'
+max_tokens_per_request: 256
+ask_interval_sec: 5.0
