@@ -55,20 +55,17 @@ Thogh non Japanese messages are given, Zundamon answers in Japanese.
 - Almost all messages are shown in this window.
 - Messages contain only stamps are ignored.
 - Some messages which exist in 1msec polling gap may lost.
-- The Application keeps running even if this window is closed, so you can close this window if unnecessary.
-<br>
+- The Application keeps running even if this window is closed, so you can close this window if unnecessary.<br>
     ![](ReadMeParts/monitor_window.png)
 
 ### Window for asking
 - All picked up messages which will be answered by Zundamon are shown in this window.
-- The Application keeps running even if this window is closed, so you can close this window if unnecessary.
-<br>
+- The Application keeps running even if this window is closed, so you can close this window if unnecessary.<br>
     ![](ReadMeParts/ask_window.png)
 
 ### Window for answering
 - Zundamon answers for picked up messages are shown in this window.
-- The Application keeps running even if this window is closed, so you can close this window if unnecessary.
-<br>
+- The Application keeps running even if this window is closed, so you can close this window if unnecessary.<br>
     ![](ReadMeParts/answer_window.png)<br>
 
 Notice: The following window is VOICEVOX which is external application.<br>
