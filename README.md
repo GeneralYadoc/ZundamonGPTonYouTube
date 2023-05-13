@@ -68,9 +68,9 @@ Thogh non Japanese messages are given, Zundamon answers in Japanese.
 - The Application keeps running even if this window is closed, so you can close this window if unnecessary.<br>
     ![](ReadMeParts/answer_window.png)<br>
 
-Notice: The following window is VOICEVOX which is external application.<br>
-It's necessary for generating Zundamon voices, so please don't close the window.
-<br>
+### Notice
+ - The following window is VOICEVOX which is external application.<br>
+    It's necessary for generating Zundamon voices, so please don't close the window.<br>
     ![](ReadMeParts/voicevox_window.png)<br>
 
 
