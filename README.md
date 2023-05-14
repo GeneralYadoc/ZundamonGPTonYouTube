@@ -26,8 +26,7 @@ Thogh non Japanese messages are given, Zundamon answers in Japanese.
 ## Usage
 - Install [VOICEVOX](https://voicevox.hiroshiba.jp/)
 - Get OpenAI api-key. Please refer [here(English)](https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/) or [here(Japanese)](https://laboratory.kazuuu.net/how-to-get-an-openai-api-key/)
-- Access [here](Release/ZundamonGPTonYouTube.zip) and click "Raw" button. You can download "ZundamonGPTonYouTube.zip" by the process.<br>
-    ![](ReadMeParts/raw_button.png)
+- click [here](https://github.com/GeneralYadoc/ZundamonGPTonYouTube/releases/download/v1.0.0/ZundamonGPTonYouTube.zip) to download.
 - Unzip Downloaded "ZundamonGPTonYouTube.zip" file.
 - Open "ZundamonGPTonYouTube" and double click ZundamonGPTonYouTube_SampleUI.exe.
 - Check Video ID of target YouTube stream.<br>
