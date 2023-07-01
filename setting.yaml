@@ -1,0 +1,48 @@
+# VoiceVoxの設定
+voicevox_path: ''
+
+# チャット欄ウィンドウの設定
+display_user_name_on_chat_window: 'True'
+chat_window_title: 'ちゃっとらん'
+chat_window_size: '350x754'
+chat_window_padx : '9'
+chat_window_pady : '9'
+chat_window_color: '#ffffff'
+chat_font_color: '#000000'
+chat_font_size: '10'
+chat_font_type: 'Courier'
+chat_rendering_method: 'normal'
+
+# 質問ウィンドウの設定
+display_user_name_on_ask_window: 'False'
+ask_window_title: 'ぐみんのしつもん'
+ask_window_size: '500x250'
+ask_window_padx : '9'
+ask_window_pady : '9'
+ask_window_color: '#354c87'
+ask_font_color: '#ffe4fb'
+ask_font_size: '12'
+ask_font_type: 'Courier'
+ask_rendering_method: 'refresh'
+
+# 回答ウィンドウの設定
+answer_window_title: 'てんさいずんだもんのこたえ'
+answer_window_size: '500x450'
+answer_window_padx : '9'
+answer_window_pady : '9'
+answer_window_color: '#ffe4e0'
+answer_font_color: '#004cF7'
+answer_font_size: '13'
+answer_font_type: 'Helvetica'
+answer_rendering_method: 'incremental'
+
+# AIの設定
+model: 'gpt-3.5-turbo'
+max_tokens_per_request: 1024
+ask_interval_sec: 20.0
+
+# 回答キャラクターの設定
+speaker_type: 1
+volume: 100
+system_role: 'あなたはユーザーとの会話を楽しく盛り上げるために存在する、日本語話者の愉快なアシスタントです。'
+image_file: zundamon.gif

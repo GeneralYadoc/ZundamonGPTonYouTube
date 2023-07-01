@@ -1,0 +1,7 @@
+chatai-streamer==2.0.3
+PyYAML==6.0
+googletranslate-python==1.0.3
+deep-translator==1.11.1
+requests==2.29.0
+pydub==0.25.1
+PySimpleGUI==4.60.5

@@ -1,34 +1,64 @@
 # ZundamonGPTonYouTube
+English | [日本語](README2.md)<br><br>
 Intelligent Zundamon replies YouTube chat with GPT brain.
 <br><br>
 
 ## First of all
-- This project is now Japanese only but I have a plan to open my source codes, then you'll be able to customize language.
-- If you are not good at English, please use [Google Transrate](https://translate.google.com/?sjid=2238627840605957328-AP&sl=auto&op=websites)
-<br><br>
+- This Application is Japanese only since it's depend on Japanese voice engine "VOICEVOX", but You can cutomize by modifying MIT liccenced source codes.
 
 ## This application works on
 - Windows OS (tested on Windows 10)
 - .Net Framework v.4 (tested on v4.7.2)
 - the machine on which installed [VOICEVOX](https://voicevox.hiroshiba.jp/) (tested on v.0.14.6)
 
-Core Module is implemented by Python, so it can adapt to other OS or voice generators. Please wait for opening source codes. 
+    Core Module is implemented by Python, so it can adapt to other OS or voice generators.<br>
+    Only avatar image viewer heavily depends on Windows since its codes are written in C#. I have a plan to replace the codes to python in order to be available on other several platforms.
 <br><br>
 
 ## This application can
 - automatically pick up messages from YouTube chat and make Zundamon speak the GPT answer of those messages out. <br>
 Thogh non Japanese messages are given, Zundamon answers in Japanese.
 - display all comments of YouTube chat, picked up comments, answers of picked up comments.
-- display Zundamon portrait with transparent background.<br>
-
-![](ReadMeParts/zundamon_full.png)
+- display Zundamon portrait with transparent background.
+- You can use not only Zundamon voice and image but also other ones. <br>
+[![GttsAIStreamer sample](ReadMeParts/zundamon_thumbnail.png)](https://www.youtube.com/embed/7GgssTTo2-c)
 
 ## Usage
 - Install [VOICEVOX](https://voicevox.hiroshiba.jp/)
 - Get OpenAI api-key. Please refer [here(English)](https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/) or [here(Japanese)](https://laboratory.kazuuu.net/how-to-get-an-openai-api-key/)
-- click [here](https://github.com/GeneralYadoc/ZundamonGPTonYouTube/releases/download/v1.0.0/ZundamonGPTonYouTube.zip) to download.
-- Unzip Downloaded "ZundamonGPTonYouTube.zip" file.
-- Open "ZundamonGPTonYouTube" and double click ZundamonGPTonYouTube_SampleUI.exe.
+- if you want to launch from .exe file.
+    - click [here](https://github.com/GeneralYadoc/ZundamonGPTonYouTube/releases) to download newest version.
+    - Unzip Downloaded "ZundamonGPTonYouTube.zip" file.
+    - Open "ZundamonGPTonYouTube" and double click ZundamonGPTonYouTube.exe.
+- if you want to launch from source codes.
+    - Install ffmpeg.<br>
+      <b>For Linux:</b> Execute following command.
+      ```ffmpeg installation for Linux
+      $ sudo apt-get install ffmpeg
+      ```
+  
+      <b>For Windows:</b> Access [here](https://github.com/BtbN/FFmpeg-Builds/releases), download '*-win64-gpl.zip', extract the zip and move three exe files (ffmpeg.exe, ffprobe.exe, ffplay.exe) to the folder where you'll execute the sample or added path.<br>
+      <br>
+      <b>For Mac:</b> Access [here](https://brew.sh/), copy installation command to your terminal and push Enter key, and execute following command.
+      ```
+      brew install ffmpeg
+      ```
+    - Clone repository.<br>
+        ```clone
+        git clone https://github.com/GeneralYadoc/ZundamonGPTonYouTube.git
+        ```
+    - Move to ZundamonGPTonYouTube directory
+        ```mv
+        mv ZundamonGPTonYouTube.
+        ```
+    - Install the application.
+        ```install
+        pip install .
+        ```
+    - Start the application.
+        ```
+        python3 ZundamonGPTonYouTube.py
+        ```
 - Check Video ID of target YouTube stream.<br>
     ![](ReadMeParts/video_id.png)
 - Fill in the Video ID brank of start form. (use Ctrl+V to paste)
@@ -37,42 +67,54 @@ Thogh non Japanese messages are given, Zundamon answers in Japanese.
     ![](ReadMeParts/start_form.png)
 
 ### Notice
-- OpenAI api-key and Video ID is recorded in "variable_cache.yaml" and You can skip either or both from the 2nd time.
-- Please be aware of treating "variable_cache.yaml" in order to avoid leaking OpenAI api-key.
+- OpenAI api key and Video ID is recorded in "variable_cache.yaml" and You can skip either or both from the 2nd time.
+- Please be aware of treating "variable_cache.yaml" in order to avoid leaking OpenAI api key.
 <br><br>
 
 ## GUI is consisted of
 
-### Zundamon portrait window (main window)
-- You can swich opaque or transparent background by double clicking Zundamon.
-- You can resize Zundamon in opaque background mode, please elase background after adjusting Zundamon size if you want.
-- Minimizinq window also is available in opaque backgroune mode.
-- You can exit the application by closing this window. window "x" button of TopRight also is enable in opaque background mode. <br>
+### Main window
+- You can change visibility of chat window by pressing "ちゃっと" button, asking window by pressing "しつもん" button, answering window by pressing "こたえ" button, portrait window by pressing "立ち絵" button.
+- You can change voice volume by using slide bar which is at the bottom of the window.
+- Also you can change voice volume by putting value on text box at the just right of the slide bar and press enter key. 
+- You can exit the application by closing this window. window "x" button of TopRight.<br>
+    ![](ReadMeParts/main_window.png)
+
+### Portrait window
+- You can display a portrait of avatar which you like by specifying the path in setting file.
+- You can switch opaque or transparent background by double clicking the avatar.
+- You can resize the avatar in opaque background mode, please erase background after adjusting avatar size if you want.
+- Minimizinq window also is available in opaque backgroune mode.<br>
+- The Application keeps running even if this window is closed, so you can close this window if unnecessary.<br>
     ![](ReadMeParts/zundamon_opaque_transparent.png)
 
 ### YouTube chat monitor window
 - Almost all messages are shown in this window.
-- Messages contain only stamps are ignored.
-- Some messages which exist in 1msec polling gap may lost.
+- Messages contain only emoticons are ignored.
+- Some messages which exist in polling gap may lost.
+- You can switch visibility of window frame by double clicking message area of the window.
+- Please turn on the frame when resizing the window.
 - The Application keeps running even if this window is closed, so you can close this window if unnecessary.<br>
     ![](ReadMeParts/monitor_window.png)
 
 ### Window for asking
-- All picked up messages which will be answered by Zundamon are shown in this window.
+- All picked up messages which will be answered by ChatAI are shown in this window.
+- You can switch visibility of window frame by double clicking message area of the window.
+- Please turn on the frame when resizing the window.
 - The Application keeps running even if this window is closed, so you can close this window if unnecessary.<br>
     ![](ReadMeParts/ask_window.png)
 
 ### Window for answering
-- Zundamon answers for picked up messages are shown in this window.
+- ChatAI answers for picked up messages are shown in this window.
+- You can switch visibility of window frame by double clicking message area of the window.
+- Please turn on the frame when resizing the window.
 - The Application keeps running even if this window is closed, so you can close this window if unnecessary.<br>
     ![](ReadMeParts/answer_window.png)<br>
 
 ### Notice
  - The following window is VOICEVOX which is external application.<br>
-    It's necessary for generating Zundamon voices, so please don't close the window.<br>
+    It's necessary for generating Zundamon voices, so please don't close the window. (please minimize if you want to hide it.)<br>
     ![](ReadMeParts/voicevox_window.png)<br>
-
-
 <br><br>
 
 # Settings
@@ -83,41 +125,61 @@ You can customize the application with "setting.yaml" which is exist in the same
 voicevox_path: ''
 
 # チャット欄ウインドウの設定
-monitor_window_visible: 'True'    # 'True' or 'False'
-display_user_name_on_monitor_window: 'False'    # 'True' or 'False'
-monitor_window_title: 'ちゃっとらん'
-monitor_window_size: '350x754'
-monitor_window_color: '#ffffff'
-monitor_font_color: '#000000'
-monitor_font_size: '10'
-monitor_font_type: 'Courier'
+display_user_name_on_chat_window: 'True'
+chat_window_title: 'ちゃっとらん'
+chat_window_size: '350x754'
+chat_window_padx : '9'
+chat_window_pady : '9'
+chat_window_color: '#ffffff'
+chat_font_color: '#000000'
+chat_font_size: '10'
+chat_font_type: 'Courier'
+chat_rendering_method: 'normal'
 
 # 質問ウインドウの設定
-display_user_name_on_ask_window: 'False'    # 'True' or 'False'
+display_user_name_on_ask_window: 'False'
 ask_window_title: 'ぐみんのしつもん'
 ask_window_size: '500x250'
+ask_window_padx : '9'
+ask_window_pady : '9'
 ask_window_color: '#354c87'
 ask_font_color: '#ffe4fb'
 ask_font_size: '12'
 ask_font_type: 'Courier'
+ask_rendering_method: 'refresh'
 
 # 回答ウインドウの設定
 answer_window_title: 'てんさいずんだもんのこたえ'
 answer_window_size: '500x450'
+answer_window_padx : '9'
+answer_window_pady : '9'
 answer_window_color: '#ffe4e0'
 answer_font_color: '#004cF7'
 answer_font_size: '13'
 answer_font_type: 'Helvetica'
-volume: 100    # 0 - 1000
+answer_rendering_method: 'incremental'
+
+# AIの設定
 model: 'gpt-3.5-turbo'
-max_tokens_per_request: 256
-ask_interval_sec: 5.0
+max_tokens_per_request: 1024
+ask_interval_sec: 20.0
+
+# 回答キャラクターの設定
+speaker_type: 1
+volume: 100
+system_role: 'あなたはユーザーとの会話を楽しく盛り上げるために存在する、日本語話者の愉快なアシスタントです。'
+image_file: zundamon.gif
 ```
 
-- voicevox_path can remain blank if VOICEVOX has been installed to default path.
-- You can change AI model by modifying "model" value.
+- "voicevox_path" can remain blank if VOICEVOX has been installed to default path.
+- You can change AI model by changing "model" value.
+- You can change voice actor by changing "speaker_type" value.
+- You can change Avatar image by changing "image_file" path.
 <br><br>
-
+# Licence
+- The lisence type of this application is MIT, so you can customize freely.
+- the lisence type of ffmeg executable files included in release package is LGPL.
+<br><br>
 # Links
-- [Pixiv page of 坂本アヒル](https://www.pixiv.net/users/12147115) &emsp; I obtained Zundamon portrait from here.
-- [pytchat](https://github.com/taizan-hokuto/pytchat) &emsp; Python library for fetching youtube live chat.
+- [Pixiv page of 坂本アヒル](https://www.pixiv.net/users/12147115) &emsp; I obtained static Zundamon portrait which is the material of the gif animation from here.
+- [ChatAIStreamer](https://github.com/taizan-hokuto/pytchat) &emsp; Python library for getting ChatGPT voiced answer of YouTube chat stream.
