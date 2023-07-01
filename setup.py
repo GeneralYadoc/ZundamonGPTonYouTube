@@ -12,7 +12,7 @@ def _requires_from_file(filename):
 
 setup(
     name="zundamonai-streamer",
-    version="2.0.0",
+    version="2.0.1",
     license="MIT",
     description="Zundamon with ChatGPT brain answers aloud YouTube chat messages.",
     author="General Yadoc",
