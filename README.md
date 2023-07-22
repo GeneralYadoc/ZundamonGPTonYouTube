@@ -11,8 +11,7 @@ Intelligent Zundamon replies YouTube chat with GPT brain.
 - .Net Framework v.4 (tested on v4.7.2)
 - the machine on which installed [VOICEVOX](https://voicevox.hiroshiba.jp/) (tested on v.0.14.6)
 
-    Core Module is implemented by Python, so it can adapt to other OS or voice generators.<br>
-    Only avatar image viewer heavily depends on Windows since its codes are written in C#. I have a plan to replace the codes to python in order to be available on other several platforms.
+    Core Module is implemented by Python, so it can adapt to other OS or voice generators.
 <br><br>
 
 ## This application can
@@ -21,7 +20,7 @@ Thogh non Japanese messages are given, Zundamon answers in Japanese.
 - display all comments of YouTube chat, picked up comments, answers of picked up comments.
 - display Zundamon portrait with transparent background.
 - You can use not only Zundamon voice and image but also other ones. <br>
-[![GttsAIStreamer sample](ReadMeParts/zundamon_thumbnail.png)](https://www.youtube.com/embed/7GgssTTo2-c)
+[![ZundamonAIStreamer sample](ReadMeParts/zundamon_thumbnail.png)](https://www.youtube.com/embed/wpTGk_0Yf3M)
 
 ## Usage
 - Install [VOICEVOX](https://voicevox.hiroshiba.jp/)
@@ -120,44 +119,51 @@ Thogh non Japanese messages are given, Zundamon answers in Japanese.
 # Settings
 
 You can customize the application with "setting.yaml" which is exist in the same layer of the application exe file.
+
 ```setting.yaml
 # VoiceVoxの設定
 voicevox_path: ''
 
-# チャット欄ウインドウの設定
-display_user_name_on_chat_window: 'True'
+# チャット欄ウィンドウの設定
+display_user_name_on_chat_window: true
 chat_window_title: 'ちゃっとらん'
-chat_window_size: '350x754'
-chat_window_padx : '9'
-chat_window_pady : '9'
+chat_window_padx : 9
+chat_window_pady : 9
 chat_window_color: '#ffffff'
 chat_font_color: '#000000'
-chat_font_size: '10'
+chat_font_size: 10
 chat_font_type: 'Courier'
 chat_rendering_method: 'normal'
 
-# 質問ウインドウの設定
-display_user_name_on_ask_window: 'False'
+# 質問ウィンドウの設定
+display_user_name_on_ask_window: false
 ask_window_title: 'ぐみんのしつもん'
-ask_window_size: '500x250'
-ask_window_padx : '9'
-ask_window_pady : '9'
+ask_window_padx : 9
+ask_window_pady : 9
 ask_window_color: '#354c87'
 ask_font_color: '#ffe4fb'
-ask_font_size: '12'
+ask_font_size: 12
 ask_font_type: 'Courier'
 ask_rendering_method: 'refresh'
 
-# 回答ウインドウの設定
+# 回答ウィンドウの設定
 answer_window_title: 'てんさいずんだもんのこたえ'
-answer_window_size: '500x450'
-answer_window_padx : '9'
-answer_window_pady : '9'
+answer_window_padx : 9
+answer_window_pady : 9
 answer_window_color: '#ffe4e0'
 answer_font_color: '#004cF7'
-answer_font_size: '13'
+answer_font_size: 13
 answer_font_type: 'Helvetica'
 answer_rendering_method: 'incremental'
+
+# 立ち絵ウインドウの設定
+image_window_title: '立ち絵'
+image_window_refresh_rate: 30
+image_window_transparent_color: '#00ff00'
+image_window_font_color: '#0000ff'
+image_window_font_size: 11
+image_window_font_type: 'Helvetica'
+image_window_label: 'ダブルクリックで\n背景透過/非透過を\n切り替えられます'
 
 # AIの設定
 model: 'gpt-3.5-turbo'
@@ -168,13 +174,47 @@ ask_interval_sec: 20.0
 speaker_type: 1
 volume: 100
 system_role: 'あなたはユーザーとの会話を楽しく盛り上げるために存在する、日本語話者の愉快なアシスタントです。'
-image_file: zundamon.gif
 ```
 
 - "voicevox_path" can remain blank if VOICEVOX has been installed to default path.
 - You can change AI model by changing "model" value.
 - You can change voice actor by changing "speaker_type" value.
 - You can change Avatar image by changing "image_file" path.
+
+<br>
+Current size and position, frame visibility, bagckground transparency of these windows is memorized and inherited to them in next time of executing.<br>
+They are recorded in "variable_cache.yaml". you can change window size and position also by editing the file when the application is not running.
+
+``` variable_cache.yaml
+answer_frame_visible: false
+answer_window_height: 450
+answer_window_visible: true
+answer_window_width: 500
+answer_window_x: 659
+answer_window_y: 521
+api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ask_frame_visible: false
+ask_window_height: 250
+ask_window_visible: true
+ask_window_width: 500
+ask_window_x: 663
+ask_window_y: 224
+chat_frame_visible: false
+chat_window_height: 754
+chat_window_visible: true
+chat_window_width: 350
+chat_window_x: 246
+chat_window_y: 225
+image_bg_visible: false
+image_window_height: 816
+image_window_visible: true
+image_window_width: 522
+image_window_x: 1234
+image_window_y: 175
+video_id: XXXXXXXXXXX
+```
+
+
 <br><br>
 # Licence
 - The lisence type of this application is MIT, so you can customize freely.

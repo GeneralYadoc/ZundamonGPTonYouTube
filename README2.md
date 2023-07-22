@@ -12,7 +12,6 @@
 - [VOICEVOX](https://voicevox.hiroshiba.jp/) のインストールが必要 (v.0.14.6 にて動作確認済)
 
     コアモジュールはPythonで作成されているため、その他の複数のOSやボイスジェネレータに適応可能です。<br>
-    キャラクター表示ウィンドウだけはC#で作られているためWindowsに強く依存しています。キャラクター表示ウィンドウについてもPythonへの移植を計画しています。
 <br><br>
 
 ## 機能
@@ -122,44 +121,51 @@
 # 設定
 
 アプリケーションの .exe ファイルと同じ階層にある設定ファイル "setting.yaml" を用いて、設定を変更することが出来ます。
+
 ```setting.yaml
 # VoiceVoxの設定
 voicevox_path: ''
 
 # チャット欄ウィンドウの設定
-display_user_name_on_chat_window: 'True'
+display_user_name_on_chat_window: true
 chat_window_title: 'ちゃっとらん'
-chat_window_size: '350x754'
-chat_window_padx : '9'
-chat_window_pady : '9'
+chat_window_padx : 9
+chat_window_pady : 9
 chat_window_color: '#ffffff'
 chat_font_color: '#000000'
-chat_font_size: '10'
+chat_font_size: 10
 chat_font_type: 'Courier'
 chat_rendering_method: 'normal'
 
 # 質問ウィンドウの設定
-display_user_name_on_ask_window: 'False'
+display_user_name_on_ask_window: false
 ask_window_title: 'ぐみんのしつもん'
-ask_window_size: '500x250'
-ask_window_padx : '9'
-ask_window_pady : '9'
+ask_window_padx : 9
+ask_window_pady : 9
 ask_window_color: '#354c87'
 ask_font_color: '#ffe4fb'
-ask_font_size: '12'
+ask_font_size: 12
 ask_font_type: 'Courier'
 ask_rendering_method: 'refresh'
 
 # 回答ウィンドウの設定
 answer_window_title: 'てんさいずんだもんのこたえ'
-answer_window_size: '500x450'
-answer_window_padx : '9'
-answer_window_pady : '9'
+answer_window_padx : 9
+answer_window_pady : 9
 answer_window_color: '#ffe4e0'
 answer_font_color: '#004cF7'
-answer_font_size: '13'
+answer_font_size: 13
 answer_font_type: 'Helvetica'
 answer_rendering_method: 'incremental'
+
+# 立ち絵ウインドウの設定
+image_window_title: '立ち絵'
+image_window_refresh_rate: 30
+image_window_transparent_color: '#00ff00'
+image_window_font_color: '#0000ff'
+image_window_font_size: 11
+image_window_font_type: 'Helvetica'
+image_window_label: 'ダブルクリックで\n背景透過/非透過を\n切り替えられます'
 
 # AIの設定
 model: 'gpt-3.5-turbo'
@@ -170,13 +176,46 @@ ask_interval_sec: 20.0
 speaker_type: 1
 volume: 100
 system_role: 'あなたはユーザーとの会話を楽しく盛り上げるために存在する、日本語話者の愉快なアシスタントです。'
-image_file: zundamon.gif
 ```
 
 - VOICEVOX を標準の場所にインストールしている場合は、"voicevox_path" を空欄のままにしておくことができます。
 - "model" の値を変更することで、AI のモデルを変更できます。
 - "speaker_type" の値を変更することで、回答の声を変更できます。
 - "image_file" に記載のパスを変更することで、キャラクター画像を変更できます。
+
+<br>
+ウインドウサイズや位置、フレームや背景の透過情報は、現在の表示状態が常に保存され、次回起動時も前回終了時のサイズ・位置が引き継がれます。<br>
+上記設定は "variable_cache.yaml" に記憶されていますので、プログラムを実行していないときに手書きで編集して変更することもできます。
+
+``` variable_cache.yaml
+answer_frame_visible: false
+answer_window_height: 450
+answer_window_visible: true
+answer_window_width: 500
+answer_window_x: 659
+answer_window_y: 521
+api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ask_frame_visible: false
+ask_window_height: 250
+ask_window_visible: true
+ask_window_width: 500
+ask_window_x: 663
+ask_window_y: 224
+chat_frame_visible: false
+chat_window_height: 754
+chat_window_visible: true
+chat_window_width: 350
+chat_window_x: 246
+chat_window_y: 225
+image_bg_visible: false
+image_window_height: 816
+image_window_visible: true
+image_window_width: 522
+image_window_x: 1234
+image_window_y: 175
+video_id: XXXXXXXXXXX
+```
+
 <br><br>
 # ライセンス
 - このアプリケーションはMITライセンスですので、自由にカスタマイズ可能です。

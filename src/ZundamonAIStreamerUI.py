@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 import ZundamonAIStreamerManager as zm
+import TransparentViewer as tv
 import sys
 import os
 import math
 import time
 import yaml
 import queue
-import subprocess
+import multiprocessing
 import tkinter as tk
 import tkinter.font as font
 
@@ -19,6 +20,7 @@ class ZundamonAIStreamerUI:
   def __createStartWindow(self):
     self.__root.geometry('336x120')
     self.__root.title('なんでもこたえてくれるずんだもん')
+    self.__root.iconbitmap(default = self.__icon)
 
     self.__clearStartWindow()
     self.__widgits_start["video_id_label"] = tk.Label(text='Video ID')
@@ -43,6 +45,7 @@ class ZundamonAIStreamerUI:
     self.__root.geometry('336x120')
     self.__root.title('めいんういんどう')
     self.__root.iconbitmap(default = self.__icon)
+    self.__root.attributes("-topmost", True)
 
     self.__clearMainWindow()
     self.__widgits_main["buttonChat"] = tk.Button(self.__root, text="ちゃっと", width="6", command=lambda:self.__changeVisible("chat"))
@@ -87,7 +90,11 @@ class ZundamonAIStreamerUI:
   def __createMessageWindow(self, key):
     window = tk.Toplevel()
     window.title(self.__sub_window_settings[key]["title"])
-    window.geometry(self.__sub_window_settings[key]["window_size"])
+    width = self.__sub_window_settings[key]["window_default_width"]
+    height = self.__sub_window_settings[key]["window_default_height"]
+    x = self.__sub_window_settings[key]["window_default_x"]
+    y = self.__sub_window_settings[key]["window_default_y"]
+    window.geometry(f"{width}x{height}+{x}+{y}")
     window.protocol("WM_DELETE_WINDOW", lambda:self.__changeVisible(key))
     
     frame = tk.Frame(window)
@@ -101,16 +108,16 @@ class ZundamonAIStreamerUI:
                     width=800,
                     height=100,
                     bd="0",
-                    padx=self.__sub_window_settings[key]["window_padx"],
-                    pady=self.__sub_window_settings[key]["window_pady"],
-                    font=font.Font( size=self.__sub_window_settings[key]["font_size"],
+                    padx=str(self.__sub_window_settings[key]["window_padx"]),
+                    pady=str(self.__sub_window_settings[key]["window_pady"]),
+                    font=font.Font( size=str(self.__sub_window_settings[key]["font_size"]),
                                     family=self.__sub_window_settings[key]["font_type"],
                                     weight="bold" ),
                     state="disabled" )
 
 
     self.__sub_windows[key] = {
-      "visible" : False,
+      "visible" : self.__sub_window_settings[key]["window_default_visible"],
       "body" : window,
       "text" : text,
       "mouse_position" : [0, 0],
@@ -119,8 +126,14 @@ class ZundamonAIStreamerUI:
     self.__sub_windows[key]["body"].bind(sequence="<Button-1>", func=lambda event:self.__clickWindow(key=key, event=event))
     self.__sub_windows[key]["body"].bind(sequence="<B1-Motion>", func=lambda event:self.__moveWindow(key=key, event=event))
     self.__sub_windows[key]["body"].bind(sequence="<Double-Button-1>", func=lambda event:self.__doubleclickWindow(key=key, event=event))
+    self.__sub_windows[key]["body"].bind(sequence="<Configure>", func=lambda event:self.__configureWindow(key=key, event=event))
     self.__sub_windows[key]["text"].pack()
-    self.__sub_windows[key]["body"].withdraw()
+    if self.__sub_windows[key]["visible"]:
+      self.__sub_windows[key]["body"].deiconify()
+    else:
+      self.__sub_windows[key]["body"].withdraw()
+
+    self.__sub_windows[key]["body"].wm_overrideredirect(not self.__sub_window_settings[key]["frame_default_visible"])
 
   def __interruptibleSleep(self, time_sec):
     counter = math.floor(time_sec / 0.10)
@@ -143,7 +156,7 @@ class ZundamonAIStreamerUI:
     rendering_method = self.__sub_window_settings[key]["rendering_method"]
     display_name = self.__sub_window_settings[key]["display_name"]
 
-    if display_name == 'True':
+    if display_name:
       message = f"[{name}] {message}"
 
     if rendering_method == "incremental":
@@ -192,19 +205,15 @@ class ZundamonAIStreamerUI:
       with open(self.__variable_cache_path, 'r') as file:
         variable_cache = yaml.safe_load(file)
     except:
-      variable_cache["video_id"] = ""
-      variable_cache["api_key"] = ""
+      pass
     
     with open(self.__setting_path, 'r', encoding='shift_jis') as file:
       settings = yaml.safe_load(file)
-
-    self.__voicevox_path = settings['voicevox_path']
 
     self.__sub_window_settings = {}
     self.__sub_window_settings["chat"] = {}
     self.__sub_window_settings["chat"]["display_user_name"] = settings["display_user_name_on_chat_window"]
     self.__sub_window_settings["chat"]["title"] = settings["chat_window_title"]
-    self.__sub_window_settings["chat"]["window_size"] = settings["chat_window_size"]
     self.__sub_window_settings["chat"]["window_padx"] = settings["chat_window_padx"]
     self.__sub_window_settings["chat"]["window_pady"] = settings["chat_window_pady"]
     self.__sub_window_settings["chat"]["window_color"] = settings["chat_window_color"]
@@ -217,7 +226,6 @@ class ZundamonAIStreamerUI:
     self.__sub_window_settings["ask"] = {}
     self.__sub_window_settings["ask"]["display_user_name"] = settings["display_user_name_on_ask_window"]
     self.__sub_window_settings["ask"]["title"] = settings["ask_window_title"]
-    self.__sub_window_settings["ask"]["window_size"] = settings["ask_window_size"]
     self.__sub_window_settings["ask"]["window_padx"] = settings["ask_window_padx"]
     self.__sub_window_settings["ask"]["window_pady"] = settings["ask_window_pady"]
     self.__sub_window_settings["ask"]["window_color"] = settings["ask_window_color"]
@@ -229,7 +237,6 @@ class ZundamonAIStreamerUI:
 
     self.__sub_window_settings["answer"] = {}
     self.__sub_window_settings["answer"]["title"] = settings["answer_window_title"]
-    self.__sub_window_settings["answer"]["window_size"] = settings["answer_window_size"]
     self.__sub_window_settings["answer"]["window_padx"] = settings["answer_window_padx"]
     self.__sub_window_settings["answer"]["window_pady"] = settings["answer_window_pady"]
     self.__sub_window_settings["answer"]["window_color"] = settings["answer_window_color"]
@@ -239,9 +246,73 @@ class ZundamonAIStreamerUI:
     self.__sub_window_settings["answer"]["rendering_method"] = settings["answer_rendering_method"]
     self.__sub_window_settings["answer"]["display_name"] = False
 
+    self.__sub_window_settings["chat"]["window_default_width"] = 350
+    self.__sub_window_settings["chat"]["window_default_height"] = 754
+    self.__sub_window_settings["chat"]["window_default_x"] = 20
+    self.__sub_window_settings["chat"]["window_default_y"] = 20
+    self.__sub_window_settings["chat"]["window_default_visible"] = False
+    self.__sub_window_settings["chat"]["frame_default_visible"] = True
+    self.__sub_window_settings["ask"]["window_default_width"] = 500
+    self.__sub_window_settings["ask"]["window_default_height"] = 250
+    self.__sub_window_settings["ask"]["window_default_x"] = 30
+    self.__sub_window_settings["ask"]["window_default_y"] = 30
+    self.__sub_window_settings["ask"]["window_default_visible"] = False
+    self.__sub_window_settings["ask"]["frame_default_visible"] = True
+    self.__sub_window_settings["answer"]["window_default_width"] = 500
+    self.__sub_window_settings["answer"]["window_default_height"] = 450
+    self.__sub_window_settings["answer"]["window_default_x"] = 40
+    self.__sub_window_settings["answer"]["window_default_y"] = 40
+    self.__sub_window_settings["answer"]["window_default_visible"] = False
+    self.__sub_window_settings["answer"]["frame_default_visible"] = True
+ 
+    if "chat_window_width" in variable_cache:
+      self.__sub_window_settings["chat"]["window_default_width"] = variable_cache["chat_window_width"]
+    if "chat_window_height" in variable_cache:
+      self.__sub_window_settings["chat"]["window_default_height"] = variable_cache["chat_window_height"]
+    if "chat_window_x" in variable_cache:
+      self.__sub_window_settings["chat"]["window_default_x"] = variable_cache["chat_window_x"]
+    if "chat_window_y" in variable_cache:
+      self.__sub_window_settings["chat"]["window_default_y"] = variable_cache["chat_window_y"]
+    if "chat_window_visible" in variable_cache:
+      self.__sub_window_settings["chat"]["window_default_visible"] = variable_cache["chat_window_visible"]
+    if "chat_frame_visible" in variable_cache:
+      self.__sub_window_settings["chat"]["frame_default_visible"] = variable_cache["chat_frame_visible"]
+    if "ask_window_width" in variable_cache:
+      self.__sub_window_settings["ask"]["window_default_width"] = variable_cache["ask_window_width"]
+    if "ask_window_height" in variable_cache:
+      self.__sub_window_settings["ask"]["window_default_height"] = variable_cache["ask_window_height"]
+    if "ask_window_x" in variable_cache:
+      self.__sub_window_settings["ask"]["window_default_x"] = variable_cache["ask_window_x"]
+    if "ask_window_y" in variable_cache:
+      self.__sub_window_settings["ask"]["window_default_y"] = variable_cache["ask_window_y"]
+    if "ask_window_visible" in variable_cache:
+      self.__sub_window_settings["ask"]["window_default_visible"] = variable_cache["ask_window_visible"]
+    if "ask_frame_visible" in variable_cache:
+      self.__sub_window_settings["ask"]["frame_default_visible"] = variable_cache["ask_frame_visible"]
+    if "answer_window_width" in variable_cache:
+      self.__sub_window_settings["answer"]["window_default_width"] = variable_cache["answer_window_width"]
+    if "answer_window_height" in variable_cache:
+      self.__sub_window_settings["answer"]["window_default_height"] = variable_cache["answer_window_height"]
+    if "answer_window_x" in variable_cache:
+      self.__sub_window_settings["answer"]["window_default_x"] = variable_cache["answer_window_x"]
+    if "answer_window_y" in variable_cache:
+      self.__sub_window_settings["answer"]["window_default_y"] = variable_cache["answer_window_y"]
+    if "answer_window_visible" in variable_cache:
+      self.__sub_window_settings["answer"]["window_default_visible"] = variable_cache["answer_window_visible"]
+    if "answer_frame_visible" in variable_cache:
+      self.__sub_window_settings["answer"]["frame_default_visible"] = variable_cache["answer_frame_visible"]
+    if "answer_window_visible" in variable_cache:
+      self.__sub_window_settings["answer"]["window_default_visible"] = variable_cache["answer_window_visible"]
+
+    if "video_id" not in variable_cache:
+      variable_cache["video_id"] = ""
+
     stream_params = zm.streamParams(
       video_id = variable_cache["video_id"],
     )
+
+    if "api_key" not in variable_cache:
+      variable_cache["api_key"] = ""
 
     ai_params = zm.aiParams(
       api_key = variable_cache["api_key"],
@@ -259,6 +330,9 @@ class ZundamonAIStreamerUI:
                                            volume=volume,
                                            send_message_cb=self.__sendMessage )
 
+    if "voicevox_path" in settings and settings['voicevox_path'] and settings['voicevox_path'] != "":
+      self.__zm_streamer_params.streamer_params.voicevox_path = settings['voicevox_path']
+
     self.__manager = None
     self.__root = tk.Tk()
     self.__root.resizable(False, False)
@@ -268,35 +342,40 @@ class ZundamonAIStreamerUI:
     self.__widgits_start = {}
     self.__widgits_main = {}
     self.__sub_windows = {}
-    self.__image_command_path = os.path.join(workspace, "TransparentViewer.exe")
-    self.__image_command_args = "-c"
-    self.__portrait_window_process = None
-    self.__portrait_image_file = settings["image_file"]
-    self.__portrait_visible_file_path = os.path.join(workspace, "viewer_visible.txt")
-    try:
-      os.remove(self.__portrait_visible_file_path)
-    except:
-      pass
+    self.__portrait_window = None
+    self.__mem_manager = None
     self.__createStartWindow()
 
   def __start(self):
     self.__running = True
 
-    variables = {}
-    if self.__widgits_start["video_id_entry"].get() == "":
-      variables["video_id"] = self.__zm_streamer_params.stream_params.video_id
-    else:
-      variables["video_id"] = self.__widgits_start["video_id_entry"].get()
-      self.__zm_streamer_params.stream_params.video_id = variables["video_id"]
-    if self.__widgits_start["api_key_entry"].get() == "":
-      variables["api_key"] = self.__zm_streamer_params.ai_params.api_key
-    else:
-      variables["api_key"] = self.__widgits_start["api_key_entry"].get()
-      self.__zm_streamer_params.ai_params.api_key = variables["api_key"]
+    variable_cache = {}
+    try:
+      with open(self.__variable_cache_path, 'r') as file:
+        variable_cache = yaml.safe_load(file)
+    except:
+      pass
 
-    file = open(self.__variable_cache_path, 'w', encoding='UTF-8')
-    yaml.safe_dump(variables, file)
-    file.close()
+    if self.__widgits_start["video_id_entry"].get() == "":
+      variable_cache["video_id"] = self.__zm_streamer_params.stream_params.video_id
+    else:
+      variable_cache["video_id"] = self.__widgits_start["video_id_entry"].get()
+      self.__zm_streamer_params.stream_params.video_id = variable_cache["video_id"]
+    if self.__widgits_start["api_key_entry"].get() == "":
+      variable_cache["api_key"] = self.__zm_streamer_params.ai_params.api_key
+    else:
+      variable_cache["api_key"] = self.__widgits_start["api_key_entry"].get()
+      self.__zm_streamer_params.ai_params.api_key = variable_cache["api_key"]
+
+    image_visible = False
+    if "image_window_visible"in variable_cache:
+      image_visible = variable_cache["image_window_visible"]
+
+    try:
+      with open(self.__variable_cache_path, 'w', encoding='UTF-8') as file:
+        yaml.safe_dump(variable_cache, file)
+    except:
+      pass
 
     self.__root.title("めいんういんどう")
     self.__clearStartWindow()
@@ -305,18 +384,10 @@ class ZundamonAIStreamerUI:
     self.__createMessageWindow(key = "ask")
     self.__createMessageWindow(key = "answer")
 
-    visible_file_generated = False
-
-    while (not visible_file_generated):
-      try:
-        file = open(self.__portrait_visible_file_path, mode='w')
-      except:
-        continue
-      file.write("false")
-      file.close()
-      visible_file_generated = True
-
-    self.__portrait_window_process = subprocess.Popen(f"{self.__image_command_path} {self.__image_command_args} {self.__portrait_image_file}")
+    self.__mem_manager = multiprocessing.Manager()
+    self.__portrait_visible = self.__mem_manager.Value('b', image_visible)
+    self.__portrait_window = tv.TransparentViewer(visible_mem=self.__portrait_visible, is_client=True)
+    self.__portrait_window.start()
 
     self.__manager = zm.ZundamonAIStreamerManager(self.__zm_streamer_params)
     self.__manager.start()
@@ -342,33 +413,39 @@ class ZundamonAIStreamerUI:
 
     self.__widgits_main["scaleVolume"].set(volume)
 
+  def __saveVisibility(self, key, visible):
+    variable_cache = {}
+    try:
+      with open(self.__variable_cache_path, 'r') as file:
+        variable_cache = yaml.safe_load(file)
+    except:
+      pass
+
+    if key == "chat":
+      variable_cache["chat_window_visible"] = visible
+    elif key == "ask":
+      variable_cache["ask_window_visible"] = visible
+    elif key == "answer":
+      variable_cache["answer_window_visible"] = visible
+
+    try:
+      with open(self.__variable_cache_path, 'w', encoding='UTF-8') as file:
+        yaml.safe_dump(variable_cache, file)
+    except:
+      pass
+
   def __changeVisible(self, key):
     if self.__sub_windows[key]["visible"]:
       self.__sub_windows[key]["visible"] = False
       self.__sub_windows[key]["body"].withdraw()
+      self.__saveVisibility(key, False)
     else:
       self.__sub_windows[key]["visible"] = True
       self.__sub_windows[key]["body"].deiconify()
+      self.__saveVisibility(key, True)
 
   def __changeVisiblePortrait(self):
-    try:
-      file = open(self.__portrait_visible_file_path, mode='r')
-    except:
-      self.__root.after(ms=33, func=self.__changeVisiblePortrait)
-      return
-    
-    visible_str = file.readline().splitlines()[0]
-    visible = True if visible_str == "true" else False
-
-    try:
-      file = open(self.__portrait_visible_file_path, mode='w')
-    except:
-      self.__root.after(ms=33, func=self.__changeVisiblePortrait)
-      return
-
-    visible = not visible
-    file.write("true" if visible else "false")
-    file.close()
+    self.__portrait_visible.value = not self.__portrait_visible.value
   
   def __clickWindow(self, key, event):
     self.__sub_windows[key]["mouse_position"][0] = event.x_root
@@ -385,24 +462,74 @@ class ZundamonAIStreamerUI:
     pass
   
   def __doubleclickWindow(self, key, event=None):
-    self.__sub_windows[key]["body"].wm_overrideredirect(not self.__sub_windows[key]["body"].wm_overrideredirect())
+    cur_frame_visible = not self.__sub_windows[key]["body"].wm_overrideredirect()
+    next_frame_visible = not cur_frame_visible
+
+    self.__sub_windows[key]["body"].wm_overrideredirect(not next_frame_visible)
+
+    variable_cache = {}
+    try:
+      with open(self.__variable_cache_path, 'r') as file:
+        variable_cache = yaml.safe_load(file)
+    except:
+      pass
+
+    if key == "chat":
+      variable_cache["chat_frame_visible"] = next_frame_visible
+    elif key == "ask":
+      variable_cache["ask_frame_visible"] = next_frame_visible
+    elif key == "answer":
+      variable_cache["answer_frame_visible"] = next_frame_visible
+
+    try:
+      with open(self.__variable_cache_path, 'w', encoding='UTF-8') as file:
+        yaml.safe_dump(variable_cache, file)
+    except:
+      pass
+
+  def __configureWindow(self, key, event=None):
+    variable_cache = {}
+    try:
+      with open(self.__variable_cache_path, 'r') as file:
+        variable_cache = yaml.safe_load(file)
+    except:
+      pass
+
+    if key == "chat":
+      variable_cache["chat_window_width"] = self.__sub_windows["chat"]["body"].winfo_width()
+      variable_cache["chat_window_height"] = self.__sub_windows["chat"]["body"].winfo_height()
+      variable_cache["chat_window_x"] = self.__sub_windows["chat"]["body"].winfo_x()
+      variable_cache["chat_window_y"] = self.__sub_windows["chat"]["body"].winfo_y()
+    elif key == "ask":
+      variable_cache["ask_window_width"] = self.__sub_windows["ask"]["body"].winfo_width()
+      variable_cache["ask_window_height"] = self.__sub_windows["ask"]["body"].winfo_height()
+      variable_cache["ask_window_x"] = self.__sub_windows["ask"]["body"].winfo_x()
+      variable_cache["ask_window_y"] = self.__sub_windows["ask"]["body"].winfo_y()
+    elif key == "answer":
+      variable_cache["answer_window_width"] = self.__sub_windows["answer"]["body"].winfo_width()
+      variable_cache["answer_window_height"] = self.__sub_windows["answer"]["body"].winfo_height()
+      variable_cache["answer_window_x"] = self.__sub_windows["answer"]["body"].winfo_x()
+      variable_cache["answer_window_y"] = self.__sub_windows["answer"]["body"].winfo_y()
+
+    try:
+      with open(self.__variable_cache_path, 'w', encoding='UTF-8') as file:
+        yaml.safe_dump(variable_cache, file)
+    except:
+      pass
 
   def __close(self):
     self.__running = False
 
-    if self.__portrait_window_process:
-      self.__portrait_window_process.kill()
     if self.__manager:
       self.__manager.disconnect()
       self.__manager.join()
     self.__root.destroy()
-    try:
-      os.remove(self.__portrait_visible_file_path)
-    except:
-      pass
 
   def mainloop(self):
     self.__root.mainloop()
+    if self.__portrait_window:
+      del self.__portrait_window
+      del self.__mem_manager
 
 if __name__ == "__main__":
   ui = ZundamonAIStreamerUI(workspace=os.path.abspath(os.path.dirname(sys.argv[0])))
