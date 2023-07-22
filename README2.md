@@ -20,7 +20,7 @@
 - YouTubeのすべてのチャットメッセージ、ピックアップされたメッセージ、ピックアップされたメッセージへの回答コメントを表示できます。
 - ずんだもんの立ち絵を背景透過で表示できます。
 - 声や立ち絵はずんだもん以外に変更することも可能です。<br>
-[![GttsAIStreamer sample](ReadMeParts/zundamon_thumbnail.png)](https://www.youtube.com/embed/7GgssTTo2-c)
+[![ZundamonAIStreamer sample](ReadMeParts/zundamon_thumbnail.png)](https://www.youtube.com/embed/wpTGk_0Yf3M)
 
 ## 使い方
 - [VOICEVOX](https://voicevox.hiroshiba.jp/) をリンク先からインストール。
